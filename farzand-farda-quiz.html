@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>آیا واقعاً فرزندتان را می‌شناسید؟</title>
+
+<!-- فونت فارسی با کیفیت برای تایپوگرافی پریمیوم -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+  /* ===================== توکن‌های طراحی ===================== */
+  :root{
+    --primary:#2A9D8F;
+    --primary-dark:#218075;
+    --secondary:#264653;
+    --bg:#F8F6F2;
+    --accent:#C97B63;
+    --white:#FFFFFF;
+    --ink:#264653;
+    --muted:#7C8B8E;
+    --line:#E7E2D8;
+
+    --shadow-sm: 0 2px 8px rgba(38,70,83,0.06);
+    --shadow-md: 0 10px 30px rgba(38,70,83,0.10);
+    --shadow-lg: 0 20px 50px rgba(38,70,83,0.16);
+
+    --radius-lg: 26px;
+    --radius-md: 18px;
+    --radius-sm: 12px;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+
+  body{
+    font-family:'Vazirmatn', sans-serif;
+    background:
+      radial-gradient(circle at 14% 8%, rgba(42,157,143,0.10), transparent 40%),
+      radial-gradient(circle at 88% 92%, rgba(201,123,99,0.10), transparent 40%),
+      var(--bg);
+    color:var(--ink);
+    min-height:100vh;
+    direction:rtl;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* پاس کردن پسوند انیمیشن کم برای کسانی که حرکت را ترجیح نمی‌دهند */
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+  }
+
+  .wrap{
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 28px 18px 60px;
+  }
+
+  /* ===================== هدر ===================== */
+  .top-header{
+    text-align:center;
+    margin-bottom: 26px;
+    animation: fadeDown .6s ease both;
+  }
+  .top-header .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background: rgba(42,157,143,0.10);
+    color: var(--primary-dark);
+    font-weight:600;
+    font-size: 13px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  .top-header h1{
+    font-size: clamp(22px, 5vw, 30px);
+    font-weight: 800;
+    color: var(--secondary);
+    margin: 0 0 10px;
+    line-height:1.5;
+  }
+  .top-header p{
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.9;
+    margin:0;
+    max-width: 480px;
+    margin-inline:auto;
+  }
+
+  /* ===================== نوار پیشرفت ===================== */
+  .progress-zone{
+    margin: 22px 0 8px;
+  }
+  .progress-meta{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:13px;
+    color: var(--muted);
+    margin-bottom:10px;
+    font-weight:600;
+  }
+  .progress-meta .count strong{ color:var(--secondary); font-size:14px; }
+  .progress-track{
+    background: var(--line);
+    height: 8px;
+    border-radius: 999px;
+    overflow:hidden;
+    position:relative;
+  }
+  .progress-fill{
+    height:100%;
+    width:0%;
+    border-radius:999px;
+    background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+    transition: width .5s cubic-bezier(.65,0,.35,1);
+  }
+
+  /* ===================== کارت سوال ===================== */
+  .card{
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 32px 26px;
+    margin-top: 18px;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .q-screen{
+    animation: cardIn .45s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes cardIn{
+    from{ opacity:0; transform: translateY(14px) scale(.985); }
+    to{ opacity:1; transform: translateY(0) scale(1); }
+  }
+  .q-screen.leaving{
+    animation: cardOut .25s ease forwards;
+  }
+  @keyframes cardOut{
+    to{ opacity:0; transform: translateY(-10px) scale(.98); }
+  }
+
+  .q-number{
+    color: var(--primary-dark);
+    font-weight:700;
+    font-size: 13px;
+    margin-bottom: 10px;
+    display:block;
+  }
+  .q-title{
+    font-size: clamp(18px, 4vw, 21px);
+    font-weight:700;
+    color: var(--secondary);
+    line-height:1.7;
+    margin: 0 0 24px;
+  }
+
+  .options{
+    display:flex;
+    flex-direction:column;
+    gap: 12px;
+  }
+  .option{
+    border:2px solid var(--line);
+    background: #FCFBF9;
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+    text-align:right;
+    font-family:inherit;
+    font-size: 15px;
+    color: var(--ink);
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap: 14px;
+    transition: border-color .2s, background .2s, transform .15s;
+    width:100%;
+  }
+  .option:hover{
+    border-color: rgba(42,157,143,0.5);
+    background: #ffffff;
+  }
+  .option .bullet{
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+    border-radius:50%;
+    border: 2px solid var(--muted);
+    position:relative;
+    transition: border-color .2s, background .2s;
+  }
+  .option .bullet::after{
+    content:'';
+    position:absolute;
+    inset: 4px;
+    border-radius:50%;
+    background: var(--primary);
+    transform: scale(0);
+    transition: transform .2s cubic-bezier(.5,1.6,.5,1);
+  }
+  .option.selected{
+    border-color: var(--primary);
+    background: rgba(42,157,143,0.07);
+    transform: translateY(-1px);
+  }
+  .option.selected .bullet{ border-color: var(--primary); }
+  .option.selected .bullet::after{ transform: scale(1); }
+  .option.selected{
+    animation: pop .28s ease;
+  }
+  @keyframes pop{
+    0%{ transform: scale(1); }
+    40%{ transform: scale(1.015); }
+    100%{ transform: scale(1); }
+  }
+
+  /* ===================== دکمه‌های ناوبری ===================== */
+  .nav-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top: 26px;
+    gap: 12px;
+  }
+  .btn{
+    font-family:inherit;
+    border:none;
+    cursor:pointer;
+    border-radius: 999px;
+    padding: 13px 26px;
+    font-size: 15px;
+    font-weight:700;
+    transition: transform .15s, box-shadow .2s, opacity .2s, background .2s;
+  }
+  .btn:active{ transform: scale(.97); }
+  .btn-primary{
+    background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+    color:#fff;
+    box-shadow: 0 10px 22px rgba(42,157,143,0.32);
+    flex:1;
+  }
+  .btn-primary:disabled{
+    opacity:.4;
+    cursor:not-allowed;
+    box-shadow:none;
+  }
+  .btn-ghost{
+    background: transparent;
+    color: var(--muted);
+    padding: 13px 18px;
+  }
+  .btn-ghost:hover{ color: var(--secondary); }
+  .btn-ghost:disabled{ opacity:.35; cursor:not-allowed; }
+
+  /* ===================== صفحه نتیجه ===================== */
+  .result-screen{ display:none; }
+  .result-screen.active{ display:block; animation: cardIn .5s ease both; }
+
+  .result-badge{
+    width: 76px; height:76px;
+    border-radius:50%;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    display:flex; align-items:center; justify-content:center;
+    margin: 0 auto 18px;
+    box-shadow: var(--shadow-md);
+  }
+  .result-badge svg{ width:34px; height:34px; }
+
+  .score-line{
+    text-align:center;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight:600;
+    margin-bottom: 6px;
+  }
+  .score-line strong{ color:var(--secondary); font-size:16px; }
+
+  .result-title{
+    text-align:center;
+    font-size: clamp(20px,5vw,25px);
+    font-weight: 800;
+    color: var(--secondary);
+    margin: 6px 0 14px;
+  }
+  .result-text{
+    text-align:center;
+    font-size: 15.5px;
+    line-height:2;
+    color: #4B5B5D;
+    max-width: 480px;
+    margin: 0 auto 8px;
+  }
+
+  .meter{
+    display:flex;
+    gap:6px;
+    justify-content:center;
+    margin: 22px 0 4px;
+  }
+  .meter span{
+    width: 46px;
+    height: 8px;
+    border-radius:999px;
+    background: var(--line);
+  }
+  .meter span.on{ background: linear-gradient(90deg, var(--primary), var(--primary-dark)); }
+
+  /* ===================== کارت پیشنهاد ویژه ===================== */
+  .cta-card{
+    margin-top: 26px;
+    background: linear-gradient(155deg, var(--secondary) 0%, #1c343d 100%);
+    border-radius: var(--radius-lg);
+    padding: 30px 24px;
+    color:#fff;
+    position:relative;
+    overflow:hidden;
+    box-shadow: var(--shadow-lg);
+  }
+  .cta-card::before{
+    content:'';
+    position:absolute;
+    width: 220px; height:220px;
+    background: radial-gradient(circle, rgba(201,123,99,0.35), transparent 70%);
+    top:-60px; left:-60px;
+    border-radius:50%;
+  }
+  .cta-card::after{
+    content:'';
+    position:absolute;
+    width: 180px; height:180px;
+    background: radial-gradient(circle, rgba(42,157,143,0.35), transparent 70%);
+    bottom:-50px; right:-50px;
+    border-radius:50%;
+  }
+  .cta-inner{ position:relative; z-index:1; }
+  .cta-card h3{
+    font-size: 19px;
+    font-weight:800;
+    margin: 0 0 12px;
+    text-align:center;
+  }
+  .cta-card > .cta-inner > p.lead{
+    text-align:center;
+    font-size:14px;
+    color:#CBD8DA;
+    line-height:1.9;
+    margin: 0 0 18px;
+  }
+  .cta-list{
+    list-style:none;
+    margin: 0 0 22px;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap: 10px;
+  }
+  .cta-list li{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    font-size: 14.5px;
+    line-height:1.8;
+    color:#E8EEEE;
+    background: rgba(255,255,255,0.06);
+    padding: 12px 14px;
+    border-radius: 12px;
+  }
+  .cta-list li .check{
+    flex:0 0 20px;
+    width:20px; height:20px;
+    border-radius:50%;
+    background: var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    font-size:11px;
+    margin-top:1px;
+  }
+  .cta-btn{
+    display:block;
+    width:100%;
+    text-align:center;
+    background: var(--accent);
+    color:#fff;
+    font-weight:800;
+    font-size: 16px;
+    padding: 17px;
+    border-radius: 999px;
+    text-decoration:none;
+    box-shadow: 0 14px 28px rgba(201,123,99,0.4);
+    transition: transform .15s, box-shadow .2s, background .2s;
+  }
+  .cta-btn:hover{
+    background:#b5694f;
+    transform: translateY(-2px);
+    box-shadow: 0 18px 34px rgba(201,123,99,0.5);
+  }
+
+  /* ===================== اکشن‌های پایانی ===================== */
+  .footer-actions{
+    display:flex;
+    gap: 12px;
+    margin-top: 18px;
+  }
+  .footer-actions .btn{ flex:1; }
+  .btn-outline{
+    background: transparent;
+    border: 2px solid var(--line);
+    color: var(--secondary);
+  }
+  .btn-outline:hover{ border-color: var(--primary); color: var(--primary-dark); }
+
+  /* ===================== چاپ ===================== */
+  @media print{
+    body{ background:#fff; }
+    .top-header, .progress-zone, .nav-row, .footer-actions, .cta-card{ display:none !important; }
+    .card{ box-shadow:none; border:1px solid #ddd; }
+  }
+
+  @keyframes fadeDown{
+    from{ opacity:0; transform: translateY(-10px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  /* ===================== واکنش‌گرایی موبایل ===================== */
+  @media (max-width:480px){
+    .card{ padding: 24px 18px; border-radius: 20px; }
+    .option{ padding:14px 14px; font-size:14.5px; }
+    .nav-row{ flex-wrap: wrap; }
+  }
+
+  /* فوکوس کیبورد قابل مشاهده برای دسترس‌پذیری */
+  .option:focus-visible, .btn:focus-visible, .cta-btn:focus-visible{
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- ===================== هدر ثابت ===================== -->
+  <header class="top-header">
+    <span class="eyebrow">۲ دقیقه زمان می‌برد</span>
+    <h1>آیا واقعاً فرزندتان را می‌شناسید؟</h1>
+    <p>قبل از اینکه برای آینده فرزندتان تصمیم بگیرید، ببینید چقدر او را واقعاً می‌شناسید.</p>
+  </header>
+
+  <!-- ===================== نوار پیشرفت ===================== -->
+  <div class="progress-zone" id="progressZone">
+    <div class="progress-meta">
+      <span class="count">سؤال <strong id="qIndex">۱</strong> از ۱۲</span>
+      <span id="progressPercent">۸٪</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <!-- ===================== کارت سوال ===================== -->
+  <main class="card" id="quizCard">
+    <div class="q-screen" id="qScreen">
+      <span class="q-number" id="qLabel"></span>
+      <h2 class="q-title" id="qTitle"></h2>
+      <div class="options" id="optionsZone"></div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-ghost" id="backBtn">‹ قبلی</button>
+      <button class="btn btn-primary" id="nextBtn" disabled>بعدی ›</button>
+    </div>
+  </main>
+
+  <!-- ===================== صفحه نتیجه ===================== -->
+  <section class="card result-screen" id="resultScreen">
+    <div class="result-badge">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L14.5 8.5L21 9L16 13.5L17.5 20L12 16.5L6.5 20L8 13.5L3 9L9.5 8.5L12 2Z" fill="white"/>
+      </svg>
+    </div>
+    <p class="score-line">امتیاز شناخت شما: <strong id="scoreText">۰ از ۳۶</strong></p>
+    <h2 class="result-title" id="resultTitle"></h2>
+    <p class="result-text" id="resultText"></p>
+    <div class="meter" id="meterZone"></div>
+
+    <!-- کارت پیشنهاد ویژه - همیشه بعد از نتیجه نمایش داده می‌شود -->
+    <div class="cta-card">
+      <div class="cta-inner">
+        <h3>قدم بعدی چیست؟</h3>
+        <p class="lead">این پرسشنامه فقط میزان شناخت شما از فرزندتان را بررسی کرد. اما هنوز مشخص نمی‌کند:</p>
+        <ul class="cta-list">
+          <li><span class="check">✓</span> استعدادهای اصلی فرزندتان چیست.</li>
+          <li><span class="check">✓</span> کدام هوش‌ها در او قوی‌تر هستند.</li>
+          <li><span class="check">✓</span> چه سبک یادگیری دارد.</li>
+          <li><span class="check">✓</span> چه توانایی‌هایی هنوز کشف نشده‌اند.</li>
+        </ul>
+        <p class="lead" style="margin-bottom:18px;">برای دریافت این تصویر کامل، آزمون رایگان ۴۰ سؤالی فرزند فردا را انجام دهید.</p>
+        <a href="https://farzandefarda.ir/intelligenceabilities/" class="cta-btn" id="ctaBtn" target="_blank" rel="noopener">شروع آزمون رایگان فرزند فردا ›</a>
+      </div>
+    </div>
+
+    <div class="footer-actions">
+      <button class="btn btn-outline" id="printBtn">🖨 چاپ نتیجه</button>
+      <button class="btn btn-outline" id="restartBtn">↻ شروع دوباره</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* =========================================================
+     داده سوالات
+     هر سوال میزان «شناخت والد» را می‌سنجد، نه فرزند را.
+     هر گزینه امتیازی بین ۰ تا ۳ دارد. حداکثر امتیاز کل = ۱۲ × ۳ = ۳۶
+  ========================================================= */
+  // گزینه‌های پاسخ ثابت برای تمام سوالات (میزان اطمینان والد از دانش خودش)
+  const STANDARD_OPTIONS = [
+    { text: "🔵 کاملاً می‌دانم", score: 4 },
+    { text: "🟢 تا حدی می‌دانم", score: 3 },
+    { text: "🟡 مطمئن نیستم", score: 2 },
+    { text: "🔴 نمی‌دانم", score: 1 }
+  ];
+
+  // متن سوالات: هر سوال یک جمله «می‌دانم...» است که والد میزان اطمینانش را مشخص می‌کند
+  const questionTexts = [
+    "می‌دانم چه چیزهایی بیشتر از همه باعث ناراحتی یا دلخوری فرزندم می‌شود.",
+    "می‌دانم چه فعالیت‌هایی بیشترین انرژی و اشتیاق را در او ایجاد می‌کنند.",
+    "می‌دانم هنگام روبه‌رو شدن با یک چالش، معمولاً چه واکنشی نشان می‌دهد.",
+    "می‌دانم ترجیح می‌دهد بیشتر مستقل کار کند یا در کنار دیگران.",
+    "می‌دانم وقتی کاری سخت می‌شود، معمولاً ادامه می‌دهد یا زود منصرف می‌شود.",
+    "می‌دانم با چه روشی بهتر یاد می‌گیرد؛ دیدن، شنیدن یا انجام دادن.",
+    "می‌دانم هنگام انجام چه فعالیت‌هایی گذر زمان را فراموش می‌کند.",
+    "می‌دانم در چه محیطی احساس راحتی بیشتری دارد؛ جمع‌های شلوغ یا فعالیت‌های فردی.",
+    "می‌دانم چه نوع فعالیتی، فرزندم را هیجان‌زده و مشتاق می‌کند.",
+    "می‌دانم فرزندم برای انجام چه کاری نیازی به تشویق یا یادآوری ندارد.",
+    "می‌دانم وقتی خوشحال، ناراحت یا عصبانی است، احساساتش را چگونه نشان می‌دهد.",
+    "می‌دانم در این مرحله از زندگی، بزرگ‌ترین دغدغه یا نگرانی فرزندم چیست."
+  ];
+
+  // ساخت آرایه نهایی سوالات با گزینه‌های یکسان برای همه سوالات
+  const questions = questionTexts.map(function(text){
+    return { title: text, options: STANDARD_OPTIONS };
+  });
+
+  const TOTAL = questions.length;
+  const MAX_SCORE = TOTAL * 4; // = 48
+  const MIN_SCORE = TOTAL * 1; // = 12
+
+  /* =========================================================
+     نتایج بر اساس بازه امتیاز
+  ========================================================= */
+  const results = [
+    {
+      min: 0, max: 15,
+      title: "زمان آن رسیده که فرزندتان را از زاویه‌ای تازه بشناسید",
+      text: "این نتیجه به معنی والد ضعیف بودن نیست. فقط نشان می‌دهد هنوز تصویر کاملی از توانایی‌ها، علایق و سبک یادگیری فرزندتان ندارید.",
+      meter: 1
+    },
+    {
+      min: 16, max: 27,
+      title: "نیاز به مشاهده بیشتر",
+      text: "احتمالاً شناخت خوبی از رفتارهای روزمره دارید، اما هنوز بعضی توانایی‌های پنهان فرزندتان برایتان ناشناخته است.",
+      meter: 2
+    },
+    {
+      min: 28, max: 39,
+      title: "شناخت خوب اما با نقاط کور",
+      text: "شما به رفتارها و علایق فرزندتان توجه می‌کنید. با این حال، شناخت علمی می‌تواند به تصمیم‌های دقیق‌تر کمک کند.",
+      meter: 3
+    },
+    {
+      min: 40, max: 48,
+      title: "شناخت عمیق",
+      text: "شما احتمالاً زمان زیادی را صرف شناخت فرزندتان کرده‌اید. حالا وقت آن است که این شناخت را با ابزارهای علمی بررسی کنید.",
+      meter: 4
+    }
+  ];
+
+  /* =========================================================
+     وضعیت اپلیکیشن
+  ========================================================= */
+  let currentIndex = 0;
+  const answers = new Array(TOTAL).fill(null); // امتیاز انتخاب‌شده برای هر سوال
+
+  /* تبدیل اعداد به ارقام فارسی برای نمایش بهتر */
+  function toFa(num){
+    const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+    return String(num).split('').map(d => fa[d] !== undefined ? fa[d] : d).join('');
+  }
+
+  /* =========================================================
+     عناصر DOM
+  ========================================================= */
+  const qLabel = document.getElementById('qLabel');
+  const qTitle = document.getElementById('qTitle');
+  const optionsZone = document.getElementById('optionsZone');
+  const qScreen = document.getElementById('qScreen');
+  const qIndexEl = document.getElementById('qIndex');
+  const progressFill = document.getElementById('progressFill');
+  const progressPercent = document.getElementById('progressPercent');
+  const backBtn = document.getElementById('backBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const quizCard = document.getElementById('quizCard');
+  const progressZone = document.getElementById('progressZone');
+  const resultScreen = document.getElementById('resultScreen');
+  const scoreText = document.getElementById('scoreText');
+  const resultTitle = document.getElementById('resultTitle');
+  const resultText = document.getElementById('resultText');
+  const meterZone = document.getElementById('meterZone');
+  const restartBtn = document.getElementById('restartBtn');
+  const printBtn = document.getElementById('printBtn');
+
+  /* =========================================================
+     رندر یک سوال
+  ========================================================= */
+  function renderQuestion(index, direction){
+    const q = questions[index];
+
+    // به‌روزرسانی متادیتا
+    qLabel.textContent = "سؤال " + toFa(index + 1) + " از " + toFa(TOTAL);
+    qTitle.textContent = q.title;
+    qIndexEl.textContent = toFa(index + 1);
+
+    // ساخت گزینه‌ها
+    optionsZone.innerHTML = "";
+    q.options.forEach(function(opt, i){
+      const btn = document.createElement('button');
+      btn.type = "button";
+      btn.className = "option";
+      btn.setAttribute('role', 'radio');
+      btn.setAttribute('aria-checked', answers[index] === opt.score ? 'true' : 'false');
+
+      if (answers[index] === opt.score) {
+        btn.classList.add('selected');
+      }
+
+      const bullet = document.createElement('span');
+      bullet.className = 'bullet';
+
+      const label = document.createElement('span');
+      label.textContent = opt.text;
+
+      btn.appendChild(bullet);
+      btn.appendChild(label);
+
+      btn.addEventListener('click', function(){
+        selectAnswer(index, opt.score, btn);
+      });
+
+      optionsZone.appendChild(btn);
+    });
+
+    // به‌روزرسانی نوار پیشرفت (بر اساس شماره سوال فعلی)
+    const pct = Math.round(((index) / TOTAL) * 100) + Math.round((1/TOTAL)*100*0); // base
+    updateProgress(index);
+
+    // وضعیت دکمه‌ها
+    backBtn.disabled = (index === 0);
+    nextBtn.disabled = (answers[index] === null);
+    nextBtn.textContent = (index === TOTAL - 1) ? "مشاهده نتیجه ›" : "بعدی ›";
+
+    // انیمیشن ورود کارت
+    qScreen.classList.remove('leaving');
+    qScreen.style.animation = 'none';
+    requestAnimationFrame(function(){
+      qScreen.style.animation = '';
+    });
+  }
+
+  function updateProgress(index){
+    const answeredCount = answers.filter(a => a !== null).length;
+    const pct = Math.round((answeredCount / TOTAL) * 100);
+    progressFill.style.width = pct + "%";
+    progressPercent.textContent = toFa(pct) + "٪";
+  }
+
+  /* =========================================================
+     انتخاب پاسخ
+  ========================================================= */
+  function selectAnswer(qIdx, score, btnEl){
+    answers[qIdx] = score;
+
+    // حذف انتخاب قبلی و افزودن انتخاب جدید با انیمیشن
+    Array.from(optionsZone.children).forEach(el => {
+      el.classList.remove('selected');
+      el.setAttribute('aria-checked', 'false');
+    });
+    btnEl.classList.add('selected');
+    btnEl.setAttribute('aria-checked', 'true');
+
+    nextBtn.disabled = false;
+    updateProgress(qIdx);
+  }
+
+  /* =========================================================
+     جابه‌جایی بین سوالات با ترنزیشن نرم
+  ========================================================= */
+  function goTo(newIndex){
+    qScreen.classList.add('leaving');
+    setTimeout(function(){
+      currentIndex = newIndex;
+      renderQuestion(currentIndex);
+    }, 220);
+  }
+
+  nextBtn.addEventListener('click', function(){
+    if (answers[currentIndex] === null) return;
+
+    if (currentIndex === TOTAL - 1) {
+      showResult();
+    } else {
+      goTo(currentIndex + 1);
+    }
+  });
+
+  backBtn.addEventListener('click', function(){
+    if (currentIndex === 0) return;
+    goTo(currentIndex - 1);
+  });
+
+  /* =========================================================
+     محاسبه و نمایش نتیجه
+  ========================================================= */
+  function calculateScore(){
+    return answers.reduce((sum, val) => sum + (val || 0), 0);
+  }
+
+  function getResultBand(score){
+    return results.find(r => score >= r.min && score <= r.max) || results[0];
+  }
+
+  function showResult(){
+    const score = calculateScore();
+    const band = getResultBand(score);
+
+    scoreText.textContent = toFa(score) + " از " + toFa(MAX_SCORE);
+    resultTitle.textContent = band.title;
+    resultText.textContent = band.text;
+
+    // متر بصری شناخت
+    meterZone.innerHTML = "";
+    for (let i = 1; i <= 4; i++){
+      const seg = document.createElement('span');
+      if (i <= band.meter) seg.classList.add('on');
+      meterZone.appendChild(seg);
+    }
+
+    // پنهان کردن صفحه سوال، نمایش نتیجه
+    quizCard.style.display = "none";
+    progressZone.style.display = "none";
+    resultScreen.classList.add('active');
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* =========================================================
+     شروع دوباره
+  ========================================================= */
+  restartBtn.addEventListener('click', function(){
+    currentIndex = 0;
+    answers.fill(null);
+
+    resultScreen.classList.remove('active');
+    quizCard.style.display = "";
+    progressZone.style.display = "";
+
+    progressFill.style.width = "0%";
+    progressPercent.textContent = "۰٪";
+
+    renderQuestion(0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  /* =========================================================
+     چاپ نتیجه
+  ========================================================= */
+  printBtn.addEventListener('click', function(){
+    window.print();
+  });
+
+  /* =========================================================
+     شروع اولیه
+  ========================================================= */
+  renderQuestion(0);
+
+})();
+</script>
+
+</body>
+</html>
